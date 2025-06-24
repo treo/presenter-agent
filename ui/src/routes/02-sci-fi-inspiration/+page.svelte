@@ -15,7 +15,12 @@
 			<p class="emphasis">We wanted AI that could actually DO things</p>
 		</div>
 		<div>
-		          <ImageBlob imageName="images-007.png" borderRadius="30% 70% 70% 30% / 30% 30% 70% 70%" bgPosition="bg-center" bgSize="" />
-		      </div>
+			<ImageBlob
+				imageName="images-007.png"
+				borderRadius="30% 70% 70% 30% / 30% 30% 70% 70%"
+				bgPosition="bg-center"
+				bgSize=""
+			/>
+		</div>
 	</div>
 </div>

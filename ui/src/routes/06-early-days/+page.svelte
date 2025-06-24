@@ -8,15 +8,15 @@
 		<div class="flex flex-col">
 			<ul class="bullet-list">
 				<li>Building with basic completion APIs</li>
-				<li>Experimenting before function calling APIs existed</li>
+				<li>Experimenting before function calling APIs&nbsp;existed</li>
 				<li>Pure Python implementations</li>
-				<li>Doing "RAG" before it had a name with our own vector search</li>
+				<li>Doing "RAG" before it had a name with our&nbsp;own vector search</li>
 			</ul>
 			<div class="flex-grow"></div>
 			<p class="emphasis">Complexity was growing quickly</p>
 		</div>
 		<div>
-		          <ImageBlob imageName="images-020.png" borderRadius="35% 65% 80% 20% / 70% 45% 25% 55%" />
-		      </div>
+			<ImageBlob imageName="images-020.png" borderRadius="35% 65% 80% 20% / 70% 45% 25% 55%" />
+		</div>
 	</div>
 </div>

@@ -6,10 +6,10 @@
 	<h1 class="slide-title">Questions?</h1>
 	<div class="grid grid-cols-[2fr_1fr] flex-grow gap-6">
 		<div class="flex flex-col">
-			<ul class="text-2xl space-y-6 mt-12 list-none">
+			<ul class="space-y-6 mt-12 list-none">
 				<li>
 					<p class="font-bold mb-2">Xaibo:</p>
-					<ul class="ml-8 space-y-2 list-disc">
+					<ul class="ml-8 space-y-2 list-disc bullet-list">
 						<li>
 							<a href="https://github.com/xpressai/xaibo" class="text-primary hover:underline"
 								>https://github.com/xpressai/xaibo</a
@@ -24,9 +24,10 @@
 				</li>
 				<li>
 					<p class="font-bold mb-2">Paul Dubs</p>
-					<ul class="ml-8 space-y-2 list-disc">
+					<ul class="ml-8 space-y-2 bullet-list">
 						<li>
-							<a href="mailto:paul@xpress.ai" class="text-primary hover:underline">paul@xpress.ai</a>
+							<a href="mailto:paul@xpress.ai" class="text-primary hover:underline">paul@xpress.ai</a
+							>
 						</li>
 						<li>
 							<a href="https://www.linkedin.com/in/paul-dubs/" class="text-primary hover:underline"
@@ -39,7 +40,7 @@
 			<div class="flex-grow"></div>
 		</div>
 		<div>
-		          <ImageBlob imageName="images-101.jpg" borderRadius="60% 40% 80% 20% / 25% 75% 35% 65%" bgPosition="bg-center" />
-		      </div>
+			<ImageBlob imageName="images-101.png" borderRadius="60% 40% 80% 20% / 25% 75% 35% 65%" />
+		</div>
 	</div>
 </div>

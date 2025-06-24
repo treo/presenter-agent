@@ -17,7 +17,7 @@
 			<p class="emphasis">Projects become a fight against the framework</p>
 		</div>
 		<div>
-		          <ImageBlob imageName="images-023.png" borderRadius="50% 30% 40% 60% / 25% 75% 60% 40%" />
-		      </div>
+			<ImageBlob imageName="images-023.png" borderRadius="80% 60% 90% 60% / 90% 75% 60% 40%" bgPosition="bg-right"/>
+		</div>
 	</div>
 </div>

@@ -16,7 +16,7 @@
 			<p class="emphasis">A framework that reveals rather than conceals</p>
 		</div>
 		<div>
-		          <ImageBlob imageName="images-048.png" borderRadius="25% 75% 60% 40% / 80% 20% 50% 50%" />
-		      </div>
+			<ImageBlob imageName="images-048.png" borderRadius="25% 75% 60% 40% / 80% 20% 50% 50%" />
+		</div>
 	</div>
 </div>

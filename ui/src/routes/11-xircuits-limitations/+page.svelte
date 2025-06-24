@@ -17,7 +17,7 @@
 			<p class="emphasis">We needed something more flexible</p>
 		</div>
 		<div>
-		          <ImageBlob imageName="images-035.png" borderRadius="40% 60% 30% 70% / 55% 25% 75% 45%" />
-		      </div>
+			<ImageBlob imageName="images-035.png" borderRadius="40% 60% 30% 70% / 55% 25% 75% 45%" />
+		</div>
 	</div>
 </div>

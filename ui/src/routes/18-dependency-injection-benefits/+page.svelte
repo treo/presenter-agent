@@ -17,7 +17,11 @@
 			<div class="flex-grow"></div>
 		</div>
 		<div>
-		          <ImageBlob imageName="images-053.png" borderRadius="30% 70% 50% 50% / 60% 40% 25% 75%" bgPosition="bg-right" />
-		      </div>
+			<ImageBlob
+				imageName="images-053.png"
+				borderRadius="30% 70% 50% 50% / 60% 40% 25% 75%"
+				bgPosition="bg-right"
+			/>
+		</div>
 	</div>
 </div>

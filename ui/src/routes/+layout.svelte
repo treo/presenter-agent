@@ -84,9 +84,13 @@
 	});
 </script>
 
+<svelte:head>
+	<title>From Sci-Fi Dreams to Reality</title>
+</svelte:head>
+
 <div class="w-[100vw] h-[100vh] flex items-center justify-center">
 	<div
-		class="w-[1280px] h-[720px] mx-auto my-auto border p-8 relative"
+		class="aspect-video w-full h-full mx-auto my-auto border p-8 relative overflow-hidden"
 		style:view-transition-name="current-slide"
 	>
 		{@render children()}

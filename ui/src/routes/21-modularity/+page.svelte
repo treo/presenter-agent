@@ -15,7 +15,11 @@
 			<p class="emphasis">Define what you need, connect the pieces</p>
 		</div>
 		<div>
-		          <ImageBlob imageName="images-062.png" borderRadius="80% 20% 40% 60% / 30% 70% 55% 45%" bgPosition="bg-center" />
-		      </div>
+			<ImageBlob
+				imageName="images-062.png"
+				borderRadius="80% 20% 40% 60% / 30% 70% 55% 45%"
+				bgPosition="bg-center"
+			/>
+		</div>
 	</div>
 </div>

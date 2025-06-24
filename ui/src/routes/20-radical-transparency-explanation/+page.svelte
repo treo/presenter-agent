@@ -16,7 +16,11 @@
 			<p class="emphasis">From print debugging to X-ray vision</p>
 		</div>
 		<div>
-		          <ImageBlob imageName="images-059.png" borderRadius="20% 80% 60% 40% / 75% 25% 45% 55%" bgPosition="bg-center" />
-		      </div>
+			<ImageBlob
+				imageName="images-059.png"
+				borderRadius="20% 80% 60% 40% / 75% 25% 45% 55%"
+				bgPosition="bg-center"
+			/>
+		</div>
 	</div>
 </div>

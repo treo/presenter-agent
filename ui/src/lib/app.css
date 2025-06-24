@@ -15,6 +15,21 @@
 :root {
 	--radius: 0.65rem;
 
+	/* RESPONSIVE FONT SYSTEM */
+	/* Using vmin for consistent scaling across orientations */
+	/* Base font sizes scale from 2.5vmin to 8vmin for good readability */
+	--font-xs: clamp(0.875rem, 2vmin, 1.125rem); /* ~14-18px */
+	--font-sm: clamp(1rem, 2.5vmin, 1.375rem); /* ~16-22px */
+	--font-base: clamp(1.125rem, 3vmin, 1.625rem); /* ~18-26px */
+	--font-lg: clamp(1.25rem, 3.5vmin, 1.875rem); /* ~20-30px */
+	--font-xl: clamp(1.5rem, 4vmin, 2.25rem); /* ~24-36px */
+	--font-2xl: clamp(1.75rem, 4.5vmin, 2.625rem); /* ~28-42px */
+	--font-3xl: clamp(2rem, 5vmin, 3rem); /* ~32-48px */
+	--font-4xl: clamp(2.5rem, 6vmin, 3.75rem); /* ~40-60px */
+	--font-5xl: clamp(3rem, 7vmin, 4.5rem); /* ~48-72px */
+	--font-6xl: clamp(3.5rem, 7.5vmin, 5.25rem); /* ~56-84px */
+	--font-7xl: clamp(4rem, 8vmin, 6rem); /* ~64-96px */
+
 	/* LIGHT THEME (default) */
 	--background: oklch(1 0 0); /* white */
 	--foreground: oklch(0.17 0.014 235.107); /* navy */
@@ -153,16 +168,22 @@
 	* {
 		@apply border-border outline-ring/50;
 	}
+	html {
+		font-size: 1.5vh;
+	}
 	body {
-		@apply bg-background text-foreground text-3xl;
+		@apply bg-background text-foreground;
+		font-size: var(--font-3xl);
 	}
 
 	h1 {
-		@apply text-7xl font-bold mb-4;
+		@apply font-bold mb-4;
+		font-size: var(--font-7xl);
 	}
 
 	h2 {
-		@apply text-5xl font-semibold;
+		@apply font-semibold;
+		font-size: var(--font-5xl);
 	}
 
 	/* Slide-specific styles */
@@ -171,36 +192,43 @@
 	}
 
 	.slide-title {
-		@apply text-7xl font-bold mb-8 text-primary;
+		@apply font-bold mb-8 text-primary;
+		font-size: var(--font-7xl);
 	}
 
 	.slide-subtitle {
-		@apply text-5xl font-semibold mb-6 text-foreground;
+		@apply font-semibold mb-6 text-foreground;
+		font-size: var(--font-5xl);
 	}
 
 	.bullet-list {
-		@apply text-3xl space-y-4 mb-8;
+		@apply space-y-4 mb-8;
+		font-size: var(--font-3xl);
 	}
 
 	.bullet-list li {
-		@apply flex items-center;
+		@apply block;
 	}
 
 	.bullet-list li::before {
-		content: '•';
-		@apply text-primary font-bold mr-4 text-3xl;
+		content: '> ';
+		@apply text-primary font-bold -ml-4;
+		font-size: var(--font-3xl);
 	}
 
 	.emphasis {
-		@apply text-3xl italic text-muted-foreground mt-8;
+		@apply italic text-muted-foreground mt-8;
+		font-size: var(--font-3xl);
 	}
 
 	.code-block {
-		@apply bg-muted text-muted-foreground p-6 rounded-lg font-mono text-xl;
+		@apply bg-muted text-muted-foreground p-6 rounded-lg font-mono;
+		font-size: var(--font-xl);
 	}
 
 	.quote-text {
-		@apply text-2xl font-semibold text-foreground bg-card p-6 rounded-lg border-l-4 border-primary;
+		@apply font-thin italic text-foreground bg-card p-6 rounded-lg border-l-4 border-primary;
+		font-size: var(--font-3xl);
 	}
 
 	.image-slide {
