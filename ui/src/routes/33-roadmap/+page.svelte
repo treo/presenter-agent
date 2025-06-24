@@ -1,3 +1,7 @@
+<script>
+	import { ImageBlob } from '$lib/components';
+</script>
+
 <div class="slide">
 	<h1 class="slide-title">Roadmap</h1>
 	<div class="grid grid-cols-[2fr_1fr] flex-grow gap-6">
@@ -14,8 +18,7 @@
 			<div class="flex-grow"></div>
 		</div>
 		<div>
-            <div class="h-full w-full bg-cover bg-center" style="border-radius: 35% 65% 20% 80% / 50% 50% 75% 25%; background-image: url(/images-098.png)">
-            </div>
-        </div>
+		          <ImageBlob imageName="images-098.png" borderRadius="35% 65% 20% 80% / 50% 50% 75% 25%" bgPosition="bg-center" />
+		      </div>
 	</div>
 </div>

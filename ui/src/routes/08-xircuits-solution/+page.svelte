@@ -1,3 +1,7 @@
+<script>
+	import { ImageBlob } from '$lib/components';
+</script>
+
 <div class="slide">
 	<h1 class="slide-title">Xircuits: Our First Solution</h1>
 	<div class="grid grid-cols-[2fr_1fr] flex-grow">
@@ -12,8 +16,7 @@
 			<div class="flex-grow"></div>
 		</div>
 		<div>
-            <div class="h-full w-full bg-cover" style="border-radius: 75% 25% 55% 45% / 35% 65% 30% 70%; background-image: url(/images-026.png)">
-            </div>
-        </div>
+		          <ImageBlob imageName="images-026.png" borderRadius="75% 25% 55% 45% / 35% 65% 30% 70%" />
+		      </div>
 	</div>
 </div>

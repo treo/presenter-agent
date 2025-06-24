@@ -1,3 +1,7 @@
+<script>
+	import { ImageBlob } from '$lib/components';
+</script>
+
 <div class="slide">
 	<h1 class="slide-title">Xaibo: The next generation</h1>
 	<div class="grid grid-cols-[2fr_1fr] flex-grow">
@@ -12,8 +16,7 @@
 			<p class="emphasis">A framework that reveals rather than conceals</p>
 		</div>
 		<div>
-            <div class="h-full w-full bg-cover" style="border-radius: 25% 75% 60% 40% / 80% 20% 50% 50%; background-image: url(/images-048.png)">
-            </div>
-        </div>
+		          <ImageBlob imageName="images-048.png" borderRadius="25% 75% 60% 40% / 80% 20% 50% 50%" />
+		      </div>
 	</div>
 </div>

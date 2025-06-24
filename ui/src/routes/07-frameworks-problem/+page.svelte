@@ -1,3 +1,7 @@
+<script>
+	import { ImageBlob } from '$lib/components';
+</script>
+
 <div class="slide">
 	<h1 class="slide-title">The Frameworks Problem</h1>
 	<div class="grid grid-cols-[2fr_1fr] flex-grow">
@@ -13,8 +17,7 @@
 			<p class="emphasis">Projects become a fight against the framework</p>
 		</div>
 		<div>
-            <div class="h-full w-full bg-cover" style="border-radius: 50% 30% 40% 60% / 25% 75% 60% 40%; background-image: url(/images-023.png)">
-            </div>
-        </div>
+		          <ImageBlob imageName="images-023.png" borderRadius="50% 30% 40% 60% / 25% 75% 60% 40%" />
+		      </div>
 	</div>
 </div>

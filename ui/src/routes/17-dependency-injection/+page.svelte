@@ -1,3 +1,7 @@
+<script>
+	import { ImageBlob } from '$lib/components';
+</script>
+
 <div class="slide">
 	<h1 class="slide-title">Dependency Injection</h1>
 	<div class="grid grid-cols-[2fr_1fr] flex-grow gap-6">
@@ -15,8 +19,7 @@
 			<div class="flex-grow"></div>
 		</div>
 		<div>
-            <div class="h-full w-full bg-cover bg-right" style="border-radius: 55% 45% 25% 75% / 35% 65% 70% 30%; background-image: url(/images-053.png)">
-            </div>
-        </div>
+		          <ImageBlob imageName="images-053.png" borderRadius="55% 45% 25% 75% / 35% 65% 70% 30%" bgPosition="bg-right" />
+		      </div>
 	</div>
 </div>

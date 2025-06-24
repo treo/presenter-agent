@@ -1,3 +1,7 @@
+<script>
+	import { ImageBlob } from '$lib/components';
+</script>
+
 <div class="slide">
 	<h1 class="slide-title">Radical Transparency: The Proxy</h1>
 	<div class="grid grid-cols-[2fr_1fr] flex-grow gap-6">
@@ -19,8 +23,7 @@
 			<div class="flex-grow"></div>
 		</div>
 		<div>
-            <div class="h-full w-full bg-cover bg-center" style="border-radius: 70% 30% 35% 65% / 45% 55% 80% 20%; background-image: url(/images-056.png)">
-            </div>
-        </div>
+		          <ImageBlob imageName="images-056.png" borderRadius="70% 30% 35% 65% / 45% 55% 80% 20%" bgPosition="bg-center" />
+		      </div>
 	</div>
 </div>

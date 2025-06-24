@@ -1,3 +1,7 @@
+<script>
+	import { ImageBlob } from '$lib/components';
+</script>
+
 <div class="slide">
 	<h1 class="slide-title">The Sci-Fi Inspiration</h1>
 	<div class="grid grid-cols-[2fr_1fr] flex-grow">
@@ -11,8 +15,7 @@
 			<p class="emphasis">We wanted AI that could actually DO things</p>
 		</div>
 		<div>
-            <div class="h-full w-full bg-center" style="border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; background-image: url(/images-007.png)">
-            </div>
-        </div>
+		          <ImageBlob imageName="images-007.png" borderRadius="30% 70% 70% 30% / 30% 30% 70% 70%" bgPosition="bg-center" bgSize="" />
+		      </div>
 	</div>
 </div>

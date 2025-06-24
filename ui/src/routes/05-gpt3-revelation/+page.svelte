@@ -1,3 +1,7 @@
+<script>
+	import { ImageBlob } from '$lib/components';
+</script>
+
 <div class="slide">
 	<h1 class="slide-title">The GPT-3 Revelation</h1>
 	<div class="grid grid-cols-[2fr_1fr] flex-grow">
@@ -12,8 +16,7 @@
 			<p class="emphasis">The door to AI agents was finally open</p>
 		</div>
 		<div>
-            <div class="h-full w-full bg-cover" style="border-radius: 60% 40% 25% 75% / 50% 20% 80% 35%; background-image: url(/images-017.png)">
-            </div>
-        </div>
+		          <ImageBlob imageName="images-017.png" borderRadius="60% 40% 25% 75% / 50% 20% 80% 35%" />
+		      </div>
 	</div>
 </div>
