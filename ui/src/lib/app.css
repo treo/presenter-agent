@@ -1,0 +1,213 @@
+@import 'tailwindcss';
+
+@import 'tw-animate-css';
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+/* Xaibo “Glass-Box” Palette — 6 core colours
+   navy:        #0B0F19  → oklch(0.170 0.014 235.107)
+   dark-mid:    #022C43  → oklch(0.280 0.056 212.305)
+   mid-teal:    #004E6A  → oklch(0.400 0.072 208.677)
+   neon-cyan:   #00E1FF  → oklch(0.839 0.117 198.102)
+   highlight:   #2DF8FF  → oklch(0.897 0.104 188.723)
+   white:       #FFFFFF  → oklch(1 0 0)                     */
+
+:root {
+	--radius: 0.65rem;
+
+	/* LIGHT THEME (default) */
+	--background: oklch(1 0 0); /* white */
+	--foreground: oklch(0.17 0.014 235.107); /* navy */
+
+	--card: oklch(1 0 0);
+	--card-foreground: var(--foreground);
+
+	--popover: oklch(1 0 0);
+	--popover-foreground: var(--foreground);
+
+	--primary: oklch(0.839 0.117 198.102); /* neon-cyan */
+	--primary-foreground: var(--foreground);
+
+	--secondary: oklch(0.897 0.104 188.723); /* highlight */
+	--secondary-foreground: var(--foreground);
+
+	--muted: oklch(0.28 0.056 212.305); /* dark-mid tile */
+	--muted-foreground: oklch(0.897 0.104 188.723);
+
+	--accent: oklch(0.4 0.072 208.677); /* mid-teal */
+	--accent-foreground: oklch(1 0 0);
+
+	--destructive: oklch(0.577 0.245 27.325); /* same red as before */
+
+	--border: oklch(0.28 0.056 212.305 / 30%);
+	--input: oklch(0.28 0.056 212.305 / 15%);
+	--ring: var(--primary);
+
+	/* Chart palette (light) */
+	--chart-1: var(--primary);
+	--chart-2: var(--accent);
+	--chart-3: var(--secondary);
+	--chart-4: oklch(0.17 0.014 235.107); /* navy */
+	--chart-5: oklch(0.4 0.072 208.677); /* mid-teal */
+
+	/* Sidebar (light) */
+	--sidebar: oklch(1 0 0);
+	--sidebar-foreground: var(--foreground);
+	--sidebar-primary: var(--primary);
+	--sidebar-primary-foreground: var(--foreground);
+	--sidebar-accent: var(--secondary);
+	--sidebar-accent-foreground: var(--foreground);
+	--sidebar-border: var(--border);
+	--sidebar-ring: var(--primary);
+}
+
+/* ========================================= */
+/* DARK THEME — matches deck’s default look  */
+/* ========================================= */
+[data-theme='dark'],
+.dark {
+	--background: oklch(0.17 0.014 235.107); /* navy */
+	--foreground: oklch(1 0 0); /* white */
+
+	--card: oklch(0.28 0.056 212.305); /* dark-mid */
+	--card-foreground: var(--foreground);
+
+	--popover: var(--card);
+	--popover-foreground: var(--foreground);
+
+	--primary: oklch(0.839 0.117 198.102); /* neon-cyan */
+	--primary-foreground: oklch(0.17 0.014 235.107); /* navy */
+
+	--secondary: oklch(0.897 0.104 188.723); /* highlight */
+	--secondary-foreground: var(--primary-foreground);
+
+	--muted: oklch(0.4 0.072 208.677); /* mid-teal */
+	--muted-foreground: var(--secondary);
+
+	--accent: var(--muted);
+	--accent-foreground: var(--foreground);
+
+	--destructive: oklch(0.704 0.191 22.216);
+
+	--border: oklch(1 0 0 / 10%);
+	--input: oklch(1 0 0 / 15%);
+	--ring: var(--primary);
+
+	/* Chart palette (dark) */
+	--chart-1: var(--primary);
+	--chart-2: var(--secondary);
+	--chart-3: var(--muted);
+	--chart-4: oklch(0.17 0.014 235.107); /* navy */
+	--chart-5: oklch(0.897 0.104 188.723); /* highlight */
+
+	/* Sidebar (dark) */
+	--sidebar: var(--card);
+	--sidebar-foreground: var(--foreground);
+	--sidebar-primary: var(--primary);
+	--sidebar-primary-foreground: var(--primary-foreground);
+	--sidebar-accent: var(--secondary);
+	--sidebar-accent-foreground: var(--primary-foreground);
+	--sidebar-border: var(--border);
+	--sidebar-ring: var(--primary);
+}
+
+@theme inline {
+	--radius-sm: calc(var(--radius) - 4px);
+	--radius-md: calc(var(--radius) - 2px);
+	--radius-lg: var(--radius);
+	--radius-xl: calc(var(--radius) + 4px);
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--color-card: var(--card);
+	--color-card-foreground: var(--card-foreground);
+	--color-popover: var(--popover);
+	--color-popover-foreground: var(--popover-foreground);
+	--color-primary: var(--primary);
+	--color-primary-foreground: var(--primary-foreground);
+	--color-secondary: var(--secondary);
+	--color-secondary-foreground: var(--secondary-foreground);
+	--color-muted: var(--muted);
+	--color-muted-foreground: var(--muted-foreground);
+	--color-accent: var(--accent);
+	--color-accent-foreground: var(--accent-foreground);
+	--color-destructive: var(--destructive);
+	--color-border: var(--border);
+	--color-input: var(--input);
+	--color-ring: var(--ring);
+	--color-chart-1: var(--chart-1);
+	--color-chart-2: var(--chart-2);
+	--color-chart-3: var(--chart-3);
+	--color-chart-4: var(--chart-4);
+	--color-chart-5: var(--chart-5);
+	--color-sidebar: var(--sidebar);
+	--color-sidebar-foreground: var(--sidebar-foreground);
+	--color-sidebar-primary: var(--sidebar-primary);
+	--color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+	--color-sidebar-accent: var(--sidebar-accent);
+	--color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+	--color-sidebar-border: var(--sidebar-border);
+	--color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+	* {
+		@apply border-border outline-ring/50;
+	}
+	body {
+		@apply bg-background text-foreground text-3xl;
+	}
+
+	h1 {
+		@apply text-7xl font-bold mb-4;
+	}
+
+	h2 {
+		@apply text-5xl font-semibold;
+	}
+
+	/* Slide-specific styles */
+	.slide {
+		@apply h-full flex flex-col gap-6;
+	}
+
+	.slide-title {
+		@apply text-7xl font-bold mb-8 text-primary;
+	}
+
+	.slide-subtitle {
+		@apply text-5xl font-semibold mb-6 text-foreground;
+	}
+
+	.bullet-list {
+		@apply text-3xl space-y-4 mb-8;
+	}
+
+	.bullet-list li {
+		@apply flex items-center;
+	}
+
+	.bullet-list li::before {
+		content: '•';
+		@apply text-primary font-bold mr-4 text-3xl;
+	}
+
+	.emphasis {
+		@apply text-3xl italic text-muted-foreground mt-8;
+	}
+
+	.code-block {
+		@apply bg-muted text-muted-foreground p-6 rounded-lg font-mono text-xl;
+	}
+
+	.quote-text {
+		@apply text-2xl font-semibold text-foreground bg-card p-6 rounded-lg border-l-4 border-primary;
+	}
+
+	.image-slide {
+		@apply bg-cover inset-0 absolute p-8 text-white  flex flex-col;
+	}
+
+	.overlay {
+		@apply bg-black/30 -m-8 p-8;
+	}
+}
