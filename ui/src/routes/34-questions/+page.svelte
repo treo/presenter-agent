@@ -8,6 +8,16 @@
 		<div class="flex flex-col">
 			<ul class="space-y-6 mt-12 list-none">
 				<li>
+					<p class="font-bold mb-2">Talk Agent:</p>
+					<ul class="ml-8 space-y-2 list-disc bullet-list">
+						<li>
+							<a href="https://github.com/treo/presenter-agent" class="text-primary hover:underline"
+								>https://github.com/treo/presenter-agent</a
+							>
+						</li>
+					</ul>
+				</li>
+				<li>
 					<p class="font-bold mb-2">Xaibo:</p>
 					<ul class="ml-8 space-y-2 list-disc bullet-list">
 						<li>
