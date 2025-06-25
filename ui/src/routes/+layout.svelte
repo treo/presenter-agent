@@ -4,6 +4,8 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
+	import { toast } from 'svelte-sonner';
+	import { Toaster } from '$lib/components/ui/sonner';
 
 	let { children } = $props();
 
@@ -75,11 +77,121 @@
 		}
 	}
 
+	// WebSocket connection and interval variables
+	let ws: WebSocket | null = null;
+	let routeInterval: number | null = null;
+
+	// WebSocket connection function
+	function connectWebSocket() {
+		try {
+			ws = new WebSocket('ws://127.0.0.1:9002/ws');
+			
+			ws.onopen = () => {
+				console.log('WebSocket connected');
+				// Send initial connection message with routes and current route
+				sendMessage('connection');
+			};
+			
+			ws.onclose = () => {
+				console.log('WebSocket disconnected');
+			};
+			
+			ws.onerror = (error) => {
+				console.error('WebSocket error:', error);
+			};
+			
+			ws.onmessage = (event) => {
+				try {
+					const message = JSON.parse(event.data);
+					console.log('WebSocket message received:', message);
+					
+					if (message.type === 'goto') {
+						if (!message.route) {
+							console.error('WebSocket goto message missing route data:', message);
+							return;
+						}
+						
+						// Validate that the route exists in the routes array
+						if (!routes.includes(message.route)) {
+							console.error('WebSocket goto message contains invalid route:', message.route);
+							return;
+						}
+						
+						console.log('Navigating to route:', message.route);
+						goto(message.route);
+					} else if (message.type === 'hint') {
+						if (message.text) {
+							console.log('Displaying hint message:', message.text);
+							toast(message.text);
+						} else {
+							console.error('WebSocket hint message missing text data:', message);
+						}
+					}
+				} catch (error) {
+					console.error('Failed to parse WebSocket message:', error, 'Raw message:', event.data);
+				}
+			};
+		} catch (error) {
+			console.error('Failed to create WebSocket connection:', error);
+		}
+	}
+
+	// Function to send messages with different types
+	function sendMessage(type: 'connection' | 'route_change' | 'heartbeat') {
+		if (ws && ws.readyState === WebSocket.OPEN) {
+			const currentRoute = page.route.id || page.url.pathname;
+			try {
+				const message = {
+					type,
+					currentRoute,
+					...(type === 'connection' && { routes })
+				};
+				ws.send(JSON.stringify(message));
+			} catch (error) {
+				console.error('Failed to send WebSocket message:', error);
+			}
+		}
+	}
+
+	// Legacy function for backward compatibility (now uses heartbeat type)
+	function sendRouteId() {
+		sendMessage('heartbeat');
+	}
+
+	// Reactive route change detection
+	$effect(() => {
+		// Watch for changes in the current route
+		const currentRoute = page.route.id || page.url.pathname;
+		
+		// Send route change message when route changes (but not on initial load)
+		if (ws && ws.readyState === WebSocket.OPEN) {
+			sendMessage('route_change');
+		}
+	});
+
 	onMount(() => {
 		document.addEventListener('keydown', handleKeydown);
+		
+		// Initialize WebSocket connection
+		connectWebSocket();
+		
+		// Set up interval to send route ID every 5 seconds as fallback
+		routeInterval = setInterval(sendRouteId, 5000);
 
 		return () => {
 			document.removeEventListener('keydown', handleKeydown);
+			
+			// Clean up WebSocket connection
+			if (ws) {
+				ws.close();
+				ws = null;
+			}
+			
+			// Clear the interval
+			if (routeInterval) {
+				clearInterval(routeInterval);
+				routeInterval = null;
+			}
 		};
 	});
 </script>
@@ -96,3 +208,5 @@
 		{@render children()}
 	</div>
 </div>
+
+<Toaster />

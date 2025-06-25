@@ -171,6 +171,9 @@
 	html {
 		font-size: 1.5vh;
 	}
+	[data-sonner-toast][data-styled='true'] {
+		font-size: var(--font-2xl) !important;
+	}
 	body {
 		@apply bg-background text-foreground;
 		font-size: var(--font-3xl);
