@@ -1,0 +1,7 @@
+id: transcriber
+description: A conversation message logging agent that captures and logs all text messages with slide context to JSON lines format.
+modules:
+  - module: modules.simple_message_logger.SimpleMessageLogger
+    id: message-logger
+    config:
+      log_file: transcription/talk.jsonl

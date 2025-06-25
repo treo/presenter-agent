@@ -1,5 +1,5 @@
-id: example
-description: An example agent that uses tools
+id: presentation-assistant
+description: A presentation assistant.
 modules:
   - module: xaibo.primitives.modules.llm.OpenAILLM
     id: llm
@@ -37,5 +37,6 @@ modules:
         - He covered the main points even if not every detail
         - He explicitly indicates he's intentionally skipping certain content
         - The missed content is minor or supplementary
+        - You've already given a hint a short time ago
 
         Remember: Your goal is to help Paul deliver the best possible presentation by ensuring he doesn't accidentally skip important content, while respecting his natural presentation flow and style.

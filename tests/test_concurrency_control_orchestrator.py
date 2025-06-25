@@ -328,3 +328,145 @@ async def test_handle_text_with_system_prompt(mock_response, mock_llm, mock_tool
     assert len(call_args) >= 2  # At least system message and user message
     assert call_args[0].role.value == 'system'  # First message should be system
     assert 'helpful assistant' in call_args[0].content[0].text
+
+
+@pytest.mark.asyncio
+async def test_transcription_loading_with_valid_file(mock_response, mock_llm, mock_tool_provider, mock_history, mock_presentation_manager, tmp_path):
+    """Test transcription loading with a valid JSON lines file"""
+    # Create a temporary transcription file
+    transcription_file = tmp_path / "test_transcription.jsonl"
+    transcription_content = [
+        '{"message_text": "Hello everyone", "slide_info": {"current_slide": "/slide-1"}, "elapsed_time": "1m 0s", "timestamp": "2025-06-25T14:00:00"}',
+        '{"message_text": "This is a test", "slide_info": {"current_slide": "/slide-2"}, "elapsed_time": "2m 0s", "timestamp": "2025-06-25T14:01:00"}'
+    ]
+    transcription_file.write_text('\n'.join(transcription_content))
+    
+    config = {
+        'system_prompt': 'You are a helpful assistant',
+        'transcription_file_path': str(transcription_file)
+    }
+    
+    orchestrator = ConcurrencyControlOrchestrator(
+        response=mock_response,
+        llm=mock_llm,
+        tool_provider=mock_tool_provider,
+        history=mock_history,
+        presentation_manager=mock_presentation_manager,
+        config=config
+    )
+    
+    await orchestrator.handle_text("Hello")
+    
+    # Verify LLM was called
+    mock_llm.generate.assert_called_once()
+    
+    # Get the conversation passed to LLM
+    call_args = mock_llm.generate.call_args[0][0]  # First positional argument
+    
+    # Verify transcription was added as second message (after system prompt)
+    assert len(call_args) >= 3  # System, transcription, slide context, hint context, user message
+    assert call_args[0].role.value == 'system'  # System prompt
+    assert call_args[1].role.value == 'user'    # Transcription content
+    
+    # Check transcription content
+    transcription_text = call_args[1].content[0].text
+    assert 'This is a transcription of the talk that was given previously:' in transcription_text
+    assert '[Slide: /slide-1] Speaker said: "Hello everyone"' in transcription_text
+    assert '[Slide: /slide-2] Speaker said: "This is a test"' in transcription_text
+
+
+@pytest.mark.asyncio
+async def test_transcription_loading_with_nonexistent_file(mock_response, mock_llm, mock_tool_provider, mock_history, mock_presentation_manager):
+    """Test transcription loading with a nonexistent file"""
+    config = {
+        'system_prompt': 'You are a helpful assistant',
+        'transcription_file_path': '/nonexistent/path/transcription.jsonl'
+    }
+    
+    orchestrator = ConcurrencyControlOrchestrator(
+        response=mock_response,
+        llm=mock_llm,
+        tool_provider=mock_tool_provider,
+        history=mock_history,
+        presentation_manager=mock_presentation_manager,
+        config=config
+    )
+    
+    await orchestrator.handle_text("Hello")
+    
+    # Verify LLM was called
+    mock_llm.generate.assert_called_once()
+    
+    # Get the conversation passed to LLM
+    call_args = mock_llm.generate.call_args[0][0]  # First positional argument
+    
+    # Verify no transcription was added (should only have system, slide context, hint context, user message)
+    assert len(call_args) >= 4
+    assert call_args[0].role.value == 'system'  # System prompt
+    assert call_args[1].role.value == 'system'  # Slide context (no transcription, so this comes second)
+
+
+@pytest.mark.asyncio
+async def test_transcription_loading_without_config(mock_response, mock_llm, mock_tool_provider, mock_history, mock_presentation_manager):
+    """Test transcription loading without transcription_file_path in config"""
+    config = {
+        'system_prompt': 'You are a helpful assistant'
+        # No transcription_file_path
+    }
+    
+    orchestrator = ConcurrencyControlOrchestrator(
+        response=mock_response,
+        llm=mock_llm,
+        tool_provider=mock_tool_provider,
+        history=mock_history,
+        presentation_manager=mock_presentation_manager,
+        config=config
+    )
+    
+    await orchestrator.handle_text("Hello")
+    
+    # Verify LLM was called
+    mock_llm.generate.assert_called_once()
+    
+    # Get the conversation passed to LLM
+    call_args = mock_llm.generate.call_args[0][0]  # First positional argument
+    
+    # Verify no transcription was added
+    assert len(call_args) >= 4
+    assert call_args[0].role.value == 'system'  # System prompt
+    assert call_args[1].role.value == 'system'  # Slide context (no transcription, so this comes second)
+
+
+@pytest.mark.asyncio
+async def test_transcription_loaded_only_once(mock_response, mock_llm, mock_tool_provider, mock_history, mock_presentation_manager, tmp_path):
+    """Test that transcription is loaded only once per orchestrator instance"""
+    # Create a temporary transcription file
+    transcription_file = tmp_path / "test_transcription.jsonl"
+    transcription_content = [
+        '{"message_text": "Hello everyone", "slide_info": {"current_slide": "/slide-1"}, "elapsed_time": "1m 0s", "timestamp": "2025-06-25T14:00:00"}'
+    ]
+    transcription_file.write_text('\n'.join(transcription_content))
+    
+    config = {
+        'system_prompt': 'You are a helpful assistant',
+        'transcription_file_path': str(transcription_file)
+    }
+    
+    orchestrator = ConcurrencyControlOrchestrator(
+        response=mock_response,
+        llm=mock_llm,
+        tool_provider=mock_tool_provider,
+        history=mock_history,
+        presentation_manager=mock_presentation_manager,
+        config=config
+    )
+    
+    # Call handle_text twice
+    await orchestrator.handle_text("First message")
+    await orchestrator.handle_text("Second message")
+    
+    # Verify LLM was called twice
+    assert mock_llm.generate.call_count == 2
+    
+    # Check that transcription flag is set
+    assert orchestrator._transcription_loaded is True

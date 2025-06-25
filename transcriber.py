@@ -49,7 +49,7 @@ loader.enable_debug_logging()
 loader.get_xaibo_instance().register_server_module('ws', presentation_manager)
 
 # Get LLM for use in LiveKit VoiceAssistant
-llm = loader.get_llm("presentation-assistant")
+llm = loader.get_llm("transcriber")
 
 # Use in LiveKit agent
 assistant = Agent(

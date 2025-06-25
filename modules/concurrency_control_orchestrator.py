@@ -1,6 +1,9 @@
 import time
 import logging
-from typing import Any, Dict
+from typing import Any, Dict, List
+from datetime import datetime
+import threading
+import re
 
 from xaibo.core.protocols import TextMessageHandlerProtocol, ResponseProtocol, LLMProtocol, ToolProviderProtocol, \
     ConversationHistoryProtocol
@@ -10,6 +13,9 @@ from .presentation_websocket_manager import PresentationWebSocketManager
 import json
 
 logger = logging.getLogger("concurrency-control-orchestrator")
+
+# Track startup time when module is first imported
+_startup_time = time.time()
 
 
 class ConcurrencyControlOrchestrator(TextMessageHandlerProtocol):
@@ -24,6 +30,10 @@ class ConcurrencyControlOrchestrator(TextMessageHandlerProtocol):
     
     # Global class variable to track the latest invocation time
     _global_invocation_time: float = 0.0
+    
+    # Global class variable to track hint usage history
+    _hint_usage_history: List[Dict[str, Any]] = []
+    _hint_history_lock: threading.Lock = threading.Lock()
     
     @classmethod
     def provides(cls):
@@ -54,10 +64,12 @@ class ConcurrencyControlOrchestrator(TextMessageHandlerProtocol):
             config: Configuration dictionary with optional parameters:
                    - system_prompt: Initial system prompt for the conversation
                    - max_thoughts: Maximum number of tool usage iterations
+                   - transcription_file_path: Path to JSON lines file containing transcription data
         """
         self.config: Dict[str, Any] = config or {}
         self.system_prompt = self.config.get('system_prompt', '')
         self.max_thoughts = self.config.get('max_thoughts', 10)
+        self.transcription_file_path = self.config.get('transcription_file_path', '')
         self.response: ResponseProtocol = response
         self.llm: LLMProtocol = llm
         self.tool_provider: ToolProviderProtocol = tool_provider
@@ -66,6 +78,9 @@ class ConcurrencyControlOrchestrator(TextMessageHandlerProtocol):
         
         # Local instance variable to track this invocation's time
         self._local_invocation_time: float = 0.0
+        
+        # Flag to track if transcription has been loaded to avoid loading it multiple times
+        self._transcription_loaded: bool = False
 
     def _update_invocation_times(self) -> None:
         """Update both global and local invocation times to current time."""
@@ -85,6 +100,155 @@ class ConcurrencyControlOrchestrator(TextMessageHandlerProtocol):
         if conflict:
             logger.info(f"Concurrency conflict detected: global={ConcurrencyControlOrchestrator._global_invocation_time}, local={self._local_invocation_time}")
         return conflict
+
+    def _get_elapsed_time_formatted(self) -> str:
+        """
+        Get elapsed time since startup in minutes and seconds format.
+        
+        Returns:
+            str: Formatted elapsed time as "Xm Ys"
+        """
+        elapsed_seconds = int(time.time() - _startup_time)
+        minutes = elapsed_seconds // 60
+        seconds = elapsed_seconds % 60
+        return f"{minutes}m {seconds}s"
+
+    def _add_hint_to_history(self, hint_text: str, slide_route: str | None = None) -> None:
+        """
+        Add a hint usage entry to the global hint history.
+        
+        Args:
+            hint_text: The text content of the hint
+            slide_route: The current slide route when the hint was given
+        """
+        try:
+            current_time = time.time()
+            timestamp = datetime.now().isoformat()
+            
+            hint_entry = {
+                "text": hint_text,
+                "timestamp": timestamp,
+                "time": current_time,
+                "slide": slide_route or "[Unknown]"
+            }
+            
+            with self._hint_history_lock:
+                self._hint_usage_history.append(hint_entry)
+                # Keep only the last 50 hints to prevent memory issues
+                if len(self._hint_usage_history) > 50:
+                    self._hint_usage_history = self._hint_usage_history[-50:]
+            
+            logger.debug(f"Added hint to history: slide={slide_route}, text_length={len(hint_text)}")
+            
+        except Exception as e:
+            logger.error(f"Error adding hint to history: {e}")
+
+    def _get_hint_usage_context(self) -> str:
+        """
+        Generate a formatted hint usage history for the system prompt.
+        
+        Returns:
+            str: Formatted hint usage history (last 10 hints)
+        """
+        try:
+            with self._hint_history_lock:
+                if not self._hint_usage_history:
+                    return "HINT USAGE HISTORY: No hints have been provided yet."
+                
+                # Get the last 10 hints
+                recent_hints = self._hint_usage_history[-10:]
+                
+                context_parts = ["HINT USAGE HISTORY:"]
+                context_parts.append(f"Total hints provided: {len(self._hint_usage_history)}")
+                context_parts.append("Recent hints (most recent first):")
+                
+                for hint in reversed(recent_hints):
+                    timestamp = hint.get("timestamp", "Unknown time")
+                    slide = hint.get("slide", "[Unknown]")
+                    text = hint.get("text", "")
+                    
+                    # Truncate long hint text for readability
+                    display_text = text[:100] + "..." if len(text) > 100 else text
+                    context_parts.append(f"  - {timestamp} | Slide: {slide} | Hint: {display_text}")
+                
+                return "\n".join(context_parts)
+                
+        except Exception as e:
+            logger.error(f"Error generating hint usage context: {e}")
+            return "HINT USAGE HISTORY: Error retrieving hint history."
+
+    def _load_transcription_content(self) -> str:
+        """
+        Load and format transcription content from a JSON lines file.
+        
+        Returns:
+            str: Formatted transcription content with header, or empty string if no file or error
+        """
+        if not self.transcription_file_path:
+            logger.debug("No transcription file path configured")
+            return ""
+        
+        try:
+            import os
+            if not os.path.exists(self.transcription_file_path):
+                logger.debug(f"Transcription file not found: {self.transcription_file_path}")
+                return ""
+            
+            transcription_lines = []
+            with open(self.transcription_file_path, 'r', encoding='utf-8') as f:
+                for line_num, line in enumerate(f, 1):
+                    line = line.strip()
+                    if not line:
+                        continue
+                    
+                    try:
+                        entry = json.loads(line)
+                        message_text = entry.get('message_text', '').strip()
+                        if not message_text:
+                            continue
+                        
+                        # Extract slide information for context
+                        slide_info = entry.get('slide_info', {})
+                        current_slide = slide_info.get('current_slide', 'unknown-slide')
+                        
+                        # Extract elapsed time information
+                        elapsed_time = entry.get('elapsed_time', '')
+                        
+                        # Format the transcription entry with timing information
+                        if current_slide and current_slide != '[Not set]':
+                            if elapsed_time:
+                                formatted_entry = f"[{elapsed_time}] [Slide: {current_slide}] Speaker said: \"{message_text}\""
+                            else:
+                                formatted_entry = f"[Slide: {current_slide}] Speaker said: \"{message_text}\""
+                        else:
+                            if elapsed_time:
+                                formatted_entry = f"[{elapsed_time}] Speaker said: \"{message_text}\""
+                            else:
+                                formatted_entry = f"Speaker said: \"{message_text}\""
+                        
+                        transcription_lines.append(formatted_entry)
+                        
+                    except json.JSONDecodeError as e:
+                        logger.warning(f"Invalid JSON on line {line_num} in {self.transcription_file_path}: {e}")
+                        continue
+                    except Exception as e:
+                        logger.warning(f"Error processing line {line_num} in {self.transcription_file_path}: {e}")
+                        continue
+            
+            if not transcription_lines:
+                logger.debug(f"No valid transcription entries found in {self.transcription_file_path}")
+                return ""
+            
+            # Format the complete transcription with header
+            transcription_content = "This is a transcription of the talk that was given previously:\n\n"
+            transcription_content += "\n".join(transcription_lines)
+            
+            logger.info(f"Loaded transcription with {len(transcription_lines)} entries from {self.transcription_file_path}")
+            return transcription_content
+            
+        except Exception as e:
+            logger.error(f"Error loading transcription from {self.transcription_file_path}: {e}")
+            return ""
 
     async def _get_slide_context_message(self) -> str:
         """
@@ -220,13 +384,45 @@ class ConcurrencyControlOrchestrator(TextMessageHandlerProtocol):
         if self.system_prompt:
             conversation.insert(0, LLMMessage.system(self.system_prompt))
         
-        # Add slide context right after system prompt
+        # Add transcription content as first user message after system prompt (only once per conversation)
+        transcription_added = False
+        transcription_content = None
+        if not self._transcription_loaded:
+            transcription_content = self._load_transcription_content()
+        if transcription_content:
+            insert_position = 1 if self.system_prompt else 0
+            conversation.insert(insert_position, LLMMessage.user(transcription_content))
+            logger.debug("Added transcription content to conversation")
+            transcription_added = True
+            self._transcription_loaded = True
+        
+        # Add slide context after transcription (if present) or after system prompt
         slide_context = await self._get_slide_context_message()
         if self.system_prompt:
-            conversation.insert(1, LLMMessage.system(slide_context))
+            insert_position = 2 if transcription_added else 1
         else:
-            conversation.insert(0, LLMMessage.system(slide_context))
+            insert_position = 1 if transcription_added else 0
+        conversation.insert(insert_position, LLMMessage.system(slide_context))
         logger.debug("Added slide context to conversation")
+        
+        # Add elapsed time information after slide context
+        elapsed_time = self._get_elapsed_time_formatted()
+        elapsed_time_context = f"CURRENT SESSION ELAPSED TIME: {elapsed_time} (time since this session started)"
+        if self.system_prompt:
+            insert_position = 3 if transcription_added else 2
+        else:
+            insert_position = 2 if transcription_added else 1
+        conversation.insert(insert_position, LLMMessage.system(elapsed_time_context))
+        logger.debug("Added elapsed time context to conversation")
+        
+        # Add hint usage history after elapsed time context
+        hint_context = self._get_hint_usage_context()
+        if self.system_prompt:
+            insert_position = 4 if transcription_added else 3
+        else:
+            insert_position = 3 if transcription_added else 2
+        conversation.insert(insert_position, LLMMessage.system(hint_context))
+        logger.debug("Added hint usage context to conversation")
         
         # Add user message
         conversation.append(LLMMessage.user(text))
@@ -279,6 +475,31 @@ class ConcurrencyControlOrchestrator(TextMessageHandlerProtocol):
                     
                     try:
                         tool_result = await self.tool_provider.execute_tool(tool_name, tool_args)
+                        
+                        # Track hint tool usage
+                        if tool_name == "hint" and tool_result.success:
+                            try:
+                                # Extract hint text from tool arguments
+                                hint_text = ""
+                                if isinstance(tool_args, dict):
+                                    hint_text = tool_args.get("text", "") or tool_args.get("hint", "") or tool_args.get("message", "")
+                                elif isinstance(tool_args, str):
+                                    hint_text = tool_args
+                                
+                                if hint_text:
+                                    # Get current slide route
+                                    current_slide = None
+                                    try:
+                                        current_slide = await self.presentation_manager.get_current_route()
+                                    except Exception as e:
+                                        logger.warning(f"Could not get current slide for hint tracking: {e}")
+                                    
+                                    # Add to hint history
+                                    self._add_hint_to_history(hint_text, current_slide)
+                                    logger.info(f"Tracked hint usage on slide '{current_slide}': {len(hint_text)} characters")
+                                
+                            except Exception as e:
+                                logger.error(f"Error tracking hint usage: {e}")
                         
                         # Check for concurrency conflict after each tool execution
                         if self._check_concurrency_conflict():

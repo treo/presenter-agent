@@ -12,9 +12,10 @@
 	// Define the routes in order
 	const routes = [
 		'/00-cover',
+		'/01-paul-dubs',
 		'/02-sci-fi-inspiration',
-		'/03-image-slide',
-		'/04-paul-dubs',
+		//'/03-startreck-retro-computer',				
+		'/04-what-is-ai-agent',
 		'/05-gpt3-revelation',
 		'/06-early-days',
 		'/07-frameworks-problem',
